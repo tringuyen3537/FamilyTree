@@ -475,9 +475,12 @@ body {
   // To store awards by member id
   let awardsMap = {};
 
+  // Load existing data or start with empty array
+let familyMembers = JSON.parse(localStorage.getItem('familyTreeData')) || [];
   // Save/load including awards
   function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ family, couples, awardsMap }));
+  //  localStorage.setItem(STORAGE_KEY, JSON.stringify({ family, couples, awardsMap }));
+    localStorage.setItem('familyTreeData', JSON.stringify(familyMembers));
   }
   function load() {
     const data = localStorage.getItem(STORAGE_KEY);
