@@ -435,6 +435,8 @@ body {
 <div id="tree"></div>
 <button onclick="addRootMember()">Add Root Member</button>
 <button onclick="clearTree()">Clear Tree</button>
+<button onclick="exportTree()">Export Tree</button>
+<input type="file" id="importFile" onchange="importTree(event)" />
 
 <!-- Profile Modal -->
 <div id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
@@ -944,6 +946,37 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   
     window.addEventListener('load', adjustBodyPadding);
     window.addEventListener('resize', adjustBodyPadding);
+  // EXPORT FAMILY TREE DATA
+function exportTree() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyMembers, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", "familyTree.json");
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  document.body.removeChild(downloadAnchor);
+}
+
+// IMPORT FAMILY TREE DATA
+function importTree(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!Array.isArray(imported)) throw new Error("Invalid format");
+      familyMembers = imported;
+      save();
+      render();
+      alert("Family tree imported successfully!");
+    } catch (err) {
+      alert("Invalid file. Please select a valid familyTree.json file.");
+    }
+  };
+  reader.readAsText(file);
+}
+
   </script>
 </body>
 </html>
