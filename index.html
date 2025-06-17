@@ -510,6 +510,10 @@ let familyMembers = JSON.parse(localStorage.getItem('familyTreeData')) || [];
       tree.appendChild(renderMemberWithCouples(root));
     });
   }
+  // ✅ Run render after page loads
+document.addEventListener('DOMContentLoaded', () => {
+  render();
+});
   function renderMemberWithCouples(member) {
     const container = document.createElement('div');
     const memberCouples = couples.filter(c => c.partner1Id === member.id || c.partner2Id === member.id);
