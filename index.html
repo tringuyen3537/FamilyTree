@@ -39,6 +39,7 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   overflow: hidden;
+  font-weight: bold; /* ✅ Add this to bold name */
 }
 .member img {
   background: rgba(255,255,255,0.6); /* adds contrast to make the image pop */
@@ -212,6 +213,18 @@ a:hover::after, .spouse-profile span:hover::after {
   background: rgba(0,0,0,0.5);
   justify-content: center;
   align-items: center;
+  color: #4e0823;
+  font-weight: bold;
+  font-family: 'Vollkorn', serif;  /* for Vietnamese style if you like */
+}
+#profileModal, #profileModal * {
+  color: #4e0823 !important;
+  font-weight: bold !important;
+  font-family: 'Vollkorn', serif !important;
+}
+#profileModal .modal-content {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 #profileModal.active {
   display: flex;
