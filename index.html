@@ -551,15 +551,15 @@ body {
     </div>
   `;
 
-  // 👇 Clicking anywhere on the box opens the profile (except buttons and the image)
+  // 📌 Fix: Clicking anywhere EXCEPT button or img → opens profile modal
   div.addEventListener('click', e => {
-    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'IMG') return;
+    if (e.target.closest('button') || e.target.tagName === 'IMG') return;
     openProfileModal(member.id);
   });
 
-  // 👇 Clicking on the image prompts for URL change
+  // 📌 Fix: Clicking on img → asks for URL
   div.querySelector('img').addEventListener('click', e => {
-    e.stopPropagation(); // prevent the profile popup
+    e.stopPropagation(); // Don’t trigger the profile modal
     const url = prompt('Enter image URL:', member.img || '');
     if (url !== null) {
       member.img = url.trim();
@@ -601,6 +601,7 @@ body {
 
   return div;
 }
+
 
   function promptAddChild(parentId) {
     const memberCouples = couples.filter(c => c.partner1Id === parentId || c.partner2Id === parentId);
