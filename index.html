@@ -535,67 +535,73 @@ body {
     return container;
   }
   function createMemberBox(member, isSpouse) {
-    const div = document.createElement('div');
-    div.className = 'member';
-    if (isSpouse) div.classList.add('spouse');
-    div.innerHTML = `
-      <img src="${member.img || 'https://via.placeholder.com/80?text=No+Image'}" alt="Profile image of ${member.name}" />
-      <strong contenteditable="true">${member.name || 'Unnamed'}</strong>
-     <div class="born-year">${member.born ? `Born: ${member.born}` : ''}</div>
-      <small contenteditable="true">${member.desc || ''}</small>
-      <div>
-        <button title="Add child">Child</button>
-        ${!isSpouse ? '<button title="Add spouse">Spouse</button>' : ''}
-        ${member.parentCoupleId ? '<button title="Add sibling">Sibling</button>' : ''}
-        <button title="Remove" style="background:#d32f2f">Remove</button>
-      </div>
-    `;
-    // Clicking on the box (not buttons) opens profile modal
-    div.addEventListener('click', e => {
-      if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'STRONG' && e.target.tagName !== 'SMALL' && e.target.tagName !== 'IMG') {
-        // Do nothing if clicked on container but not actual profile parts
-        return;
-      }
-      if (e.target.tagName === 'BUTTON') return; // buttons have separate handlers
-      e.stopPropagation();
-      openProfileModal(member.id);
-    });
-    div.querySelector('img').onclick = e => {
-      e.stopPropagation();
-      const url = prompt('Enter image URL:', member.img || '');
-      if (url !== null) {
-        member.img = url.trim();
-        save();
-        render();
-      }
-    };
-    div.querySelector('strong').onblur = e => {
-      member.name = e.target.innerText.trim() || 'Unnamed';
+  const div = document.createElement('div');
+  div.className = 'member';
+  if (isSpouse) div.classList.add('spouse');
+  div.innerHTML = `
+    <img src="${member.img || 'https://via.placeholder.com/80?text=No+Image'}" alt="Profile image of ${member.name}" />
+    <strong contenteditable="true">${member.name || 'Unnamed'}</strong>
+    <div class="born-year">${member.born ? `Born: ${member.born}` : ''}</div>
+    <small contenteditable="true">${member.desc || ''}</small>
+    <div>
+      <button title="Add child">Child</button>
+      ${!isSpouse ? '<button title="Add spouse">Spouse</button>' : ''}
+      ${member.parentCoupleId ? '<button title="Add sibling">Sibling</button>' : ''}
+      <button title="Remove" style="background:#d32f2f">Remove</button>
+    </div>
+  `;
+
+  // 👇 Clicking anywhere on the box opens the profile (except buttons and the image)
+  div.addEventListener('click', e => {
+    if (e.target.tagName === 'BUTTON' || e.target.tagName === 'IMG') return;
+    openProfileModal(member.id);
+  });
+
+  // 👇 Clicking on the image prompts for URL change
+  div.querySelector('img').addEventListener('click', e => {
+    e.stopPropagation(); // prevent the profile popup
+    const url = prompt('Enter image URL:', member.img || '');
+    if (url !== null) {
+      member.img = url.trim();
       save();
       render();
-    };
-    div.querySelector('small').onblur = e => {
-      member.desc = e.target.innerText.trim();
-      save();
-    };
-    div.querySelector('button[title="Add child"]').onclick = e => {
-      e.stopPropagation();
-      promptAddChild(member.id);
-    };
-    if (!isSpouse) div.querySelector('button[title="Add spouse"]').onclick = e => {
-      e.stopPropagation();
-      addSpouse(member);
-    };
-    if (member.parentCoupleId) div.querySelector('button[title="Add sibling"]').onclick = e => {
-      e.stopPropagation();
-      addSibling(member.id);
-    };
-    div.querySelector('button[title="Remove"]').onclick = e => {
-      e.stopPropagation();
-      removeMember(member.id);
-    };
-    return div;
-  }
+    }
+  });
+
+  div.querySelector('strong').addEventListener('blur', e => {
+    member.name = e.target.innerText.trim() || 'Unnamed';
+    save();
+    render();
+  });
+
+  div.querySelector('small').addEventListener('blur', e => {
+    member.desc = e.target.innerText.trim();
+    save();
+  });
+
+  div.querySelector('button[title="Add child"]').addEventListener('click', e => {
+    e.stopPropagation();
+    promptAddChild(member.id);
+  });
+
+  if (!isSpouse) div.querySelector('button[title="Add spouse"]').addEventListener('click', e => {
+    e.stopPropagation();
+    addSpouse(member);
+  });
+
+  if (member.parentCoupleId) div.querySelector('button[title="Add sibling"]').addEventListener('click', e => {
+    e.stopPropagation();
+    addSibling(member.id);
+  });
+
+  div.querySelector('button[title="Remove"]').addEventListener('click', e => {
+    e.stopPropagation();
+    removeMember(member.id);
+  });
+
+  return div;
+}
+
   function promptAddChild(parentId) {
     const memberCouples = couples.filter(c => c.partner1Id === parentId || c.partner2Id === parentId);
     if (memberCouples.length === 0) {
