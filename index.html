@@ -162,6 +162,21 @@ a:hover::after, .spouse-profile span:hover::after {
   padding-left: 100px;
   border-left: 4px dashed  #1229ac;
 }
+  .children .children {
+  border-left: 3px dashed #0a0; /* Generation 2 → Green */
+}
+.children .children .children {
+  border-left: 3px dashed rgb(247, 34, 6); /* Generation 3 → Blue */
+}
+.children .children .children .children {
+  border-left: 3px dashed #f804ec; /* Generation 4 → Orange */
+}
+.children .children .children .children .children {
+  border-left: 3px dashed #07e2ff; /* Generation 5 → Purple */
+}
+.children .children .children .children .children.children {
+  border-left: 3px dashed #d40cee; /* Generation 5 → Purple */
+}
 .children::before {
   content: '';
   position: absolute;
