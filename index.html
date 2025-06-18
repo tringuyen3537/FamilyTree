@@ -948,7 +948,7 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   
     window.addEventListener('load', adjustBodyPadding);
     window.addEventListener('resize', adjustBodyPadding);
-    // EXPORT FAMILY TREE DATA
+/*    // EXPORT FAMILY TREE DATA
   function exportTree() {
     const data = JSON.stringify(familyMembers, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
@@ -967,6 +967,7 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   }
 
   window.exportTree = exportTree;  // ✅ This makes sure it’s available globally
+  */
 /* code   // EXPORT FAMILY TREE DATA
 function exportTree() {
   const data = JSON.stringify(familyMembers, null, 2);
@@ -1027,13 +1028,13 @@ function exportTree() {
  //      tree.appendChild(div);
   //    });
  //   }
- /* function exportTree() {
+  function exportTree() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyMembers));
       const dlAnchor = document.createElement('a');
       dlAnchor.setAttribute("href", dataStr);
       dlAnchor.setAttribute("download", "familyTreeData.json");
       dlAnchor.click();
-    }*/
+    }
 
 /*function exportTree() {
   const data = JSON.stringify(familyMembers, null, 2);
