@@ -503,16 +503,16 @@ body {
   function findCouple(id) {
     return couples.find(c => c.id === id);
   }
- // function getRoots() {
-//    return family.filter(m => !m.parentCoupleId && !m.spouseOf);
-//  }
-//  function render() {
- //   const tree = document.getElementById('tree');
-//    tree.innerHTML = '';
-//    getRoots().forEach(root => {
-//      tree.appendChild(renderMemberWithCouples(root));
-//    });
-//  }
+ function getRoots() {
+    return family.filter(m => !m.parentCoupleId && !m.spouseOf);
+  }
+  function render() {
+    const tree = document.getElementById('tree');
+    tree.innerHTML = '';
+    getRoots().forEach(root => {
+      tree.appendChild(renderMemberWithCouples(root));
+    });
+ }
   function renderMemberWithCouples(member) {
     const container = document.createElement('div');
     const memberCouples = couples.filter(c => c.partner1Id === member.id || c.partner2Id === member.id);
