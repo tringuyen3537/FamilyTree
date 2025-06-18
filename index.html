@@ -435,37 +435,6 @@ body {
 <div id="tree"></div>
 <button onclick="addRootMember()">Add Root Member</button>
 <button onclick="clearTree()">Clear Tree</button>
-<button id="testExportBtn">Test Export</button>
-<script>
-  // ✅ Dummy family data for testing — replace this with YOUR actual data variable if you know it
-  window.family = [
-    { id: 1, name: "John Doe", born: "1950" },
-    { id: 2, name: "Jane Doe", born: "1955" }
-  ];
-
-  // ✅ Wait for the document to fully load before attaching events
-  window.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('testExportBtn');
-    btn.addEventListener('click', () => {
-      console.log(window.family); // ✅ Should now print in Console
-      alert('Check console for family data');
-    });
-  });
-</script>
-<button onclick="exportFamilyData()">Export JSON</button>
-
-<script>
-function exportFamilyData() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.familyData, null, 2));
-  const downloadAnchor = document.createElement('a');
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", "familyTreeData.json");
-  downloadAnchor.click();
-}
-</script>
-<button id="testFamilyBtn" style="position: fixed; bottom: 20px; right: 20px; z-index: 10000; padding: 10px 15px; background: #0077cc; color: white; border: none; border-radius: 5px; cursor: pointer;">
-  Test Family Data
-</button>
 
 
 
@@ -973,16 +942,7 @@ setInterval(updateTimeAndDate, 60000); // update every minute
     window.addEventListener('load', adjustBodyPadding);
     window.addEventListener('resize', adjustBodyPadding);
 
-    //testing date
-    document.getElementById('testFamilyBtn').addEventListener('click', () => {
-  if (typeof family !== 'undefined') {
-    console.log('Current family data:', family);
-    alert('Check the console (F12) for family data output.');
-  } else {
-    console.warn('No variable named "family" found.');
-    alert('No variable named "family" found. Please check your code.');
-  }
-});
+   
   </script>
   <!-- Button to trigger export -->
 <button id="exportFamilyBtn" style="">Export Family JSON</button>
@@ -1028,6 +988,34 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   document.getElementById('exportFamilyBtn').addEventListener('click', exportFamilyData);
 })();
 </script>
+
+<!-- Add Import Button -->
+<input type="file" id="importFile" accept=".json" />
+<button onclick="document.getElementById('importFile').click()">Import Family Tree JSON</button>
+
+<script>
+document.getElementById('importFile').addEventListener('change', function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.family || !data.couples || !data.awardsMap) throw new Error('Invalid file structure');
+
+      // Replace data
+      localStorage.setItem('familyTreeConnectors', JSON.stringify(data));
+      alert('Family tree data imported! Reloading...');
+      location.reload();
+    } catch (err) {
+      alert('Failed to import: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+</script>
+
 
 </body>
 </html>
