@@ -948,14 +948,20 @@ setInterval(updateTimeAndDate, 60000); // update every minute
     window.addEventListener('resize', adjustBodyPadding);
   // EXPORT FAMILY TREE DATA
 function exportTree() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyMembers, null, 2));
-  const downloadAnchor = document.createElement('a');
-  downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", "familyTree.json");
-  document.body.appendChild(downloadAnchor);
-  downloadAnchor.click();
-  document.body.removeChild(downloadAnchor);
+  const data = JSON.stringify(familyMembers, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'familyTree.json';
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 }
+
 
 // IMPORT FAMILY TREE DATA
 function importTree(event) {
