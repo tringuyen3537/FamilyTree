@@ -1029,7 +1029,21 @@ function exportTree() {
 
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-  alert('✅ Family tree exported!');
+
+  // ✅ Add a temporary notification
+  const message = document.createElement('div');
+  message.textContent = '✅ Family tree exported!';
+  message.style.position = 'fixed';
+  message.style.top = '20px';
+  message.style.right = '20px';
+  message.style.background = '#4caf50';
+  message.style.color = '#fff';
+  message.style.padding = '8px 12px';
+  message.style.borderRadius = '5px';
+  message.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+  document.body.appendChild(message);
+
+  setTimeout(() => document.body.removeChild(message), 3000); // remove after 3 sec
 }
 
     function importTreeFile(event) {
