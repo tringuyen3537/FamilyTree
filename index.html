@@ -948,7 +948,7 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   
     window.addEventListener('load', adjustBodyPadding);
     window.addEventListener('resize', adjustBodyPadding);
-  // EXPORT FAMILY TREE DATA
+/* code   // EXPORT FAMILY TREE DATA
 function exportTree() {
   const data = JSON.stringify(familyMembers, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
@@ -962,9 +962,9 @@ function exportTree() {
 
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-}
+}*/
 
-
+ 
 // IMPORT FAMILY TREE DATA
 //function importTree() {
 //  const input = document.getElementById('importFile');
@@ -1008,13 +1008,27 @@ function exportTree() {
  //      tree.appendChild(div);
   //    });
  //   }
-  function exportTree() {
+ /* function exportTree() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyMembers));
       const dlAnchor = document.createElement('a');
       dlAnchor.setAttribute("href", dataStr);
       dlAnchor.setAttribute("download", "familyTreeData.json");
       dlAnchor.click();
-    }
+    }*/
+  // EXPORT FAMILY TREE DATA
+function exportTree() {
+  const data = JSON.stringify(familyMembers, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'familyTree.json';
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 
     function importTreeFile(event) {
       const file = event.target.files[0];
