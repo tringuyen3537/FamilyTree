@@ -22,25 +22,25 @@ body {
   margin-bottom: 6px;
 }
 .member {
-  background-image: url('background-profile.jpg'); /* or your desired background */
-  background-size: cover;
+  background-image: url('background-profile.jpg');
+  background-size: 140px 100%; /* match member width and full height */
   background-position: center;
-  background-repeat: no-repeat;
-  background-color: #f3edf1; /* fallback */
+  background-repeat: repeat-x;  /* repeat horizontally */
+  background-color: #f3edf1; 
   position: relative;
   overflow: hidden;
   border-radius: 8px;
   padding: 8px;
   width: 140px;
   text-align: center;
-  color: #4e0823;
+  color: #051677;
+  text-shadow: 5px 3px 5px rgba(233, 229, 8, 0.863);
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  overflow: hidden;
-  font-weight: bold; /* ✅ Add this */
+  font-weight: bold;
 }
+
 .member img {
   background: rgba(255,255,255,0.6); /* adds contrast to make the image pop */
   padding: 4px;
@@ -156,11 +156,11 @@ a:hover::after, .spouse-profile span:hover::after {
   animation: shine 1.2s ease forwards;
 }
 
-.children {
+.children {/*connection dot line relationship*/
   position: relative;
   margin-left: 30px;
   padding-left: 20px;
-  border-left: 2px dashed #bbb;
+  border-left: 4px dashed  #1229ac;
 }
 .children::before {
   content: '';
@@ -201,6 +201,11 @@ a:hover::after, .spouse-profile span:hover::after {
 
 .couple-children {
   margin-top: 6px;
+}
+.blur {
+  filter: blur(5px);
+  pointer-events: none; /* Disable clicks */
+  user-select: none; /* Prevent text selection */
 }
 
 /* Modal styles */
@@ -343,16 +348,17 @@ body::before {
 #mainHeader {
   position: fixed;
   top: 0; left: 0; right: 0;
-  height: 50px;
-  background: rgba(255, 255, 255, 0.95);
-  border-bottom: 1px solid #ccc;
+  height: 60px;
+  /*background: rgba(238, 250, 73, 0.95);*/
+  background: linear-gradient(to right, #f06363, #d8bb3a);
+  border-bottom: 1px solid #171641;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
   font-family: 'Roboto', sans-serif;
   z-index: 1001;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 5px rgba(235, 215, 41, 0.1);
   user-select: none;
 }
 
@@ -361,7 +367,8 @@ body::before {
   display: flex;
   gap: 15px;
   font-size: 0.9rem;
-  color: #555;
+  font-weight: bold;
+  color: #502ee9;
 }
 .left-info span {
   margin-right: 10px;
@@ -376,7 +383,7 @@ body::before {
       font-family: 'Great Vibes', cursive;
       font-weight: 400;
       font-size: 3rem;
-      color: #0077cc;
+      color: #090de9;
       user-select: text;
       pointer-events: none;
       text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
@@ -435,6 +442,9 @@ body {
 <div id="tree"></div>
 <button onclick="addRootMember()">Add Root Member</button>
 <button onclick="clearTree()">Clear Tree</button>
+<button id="adminBtn" style="position: fixed; top: 10px; right: 10px; z-index: 9999;">
+  Admin Login
+</button>
 
 
 
@@ -562,6 +572,10 @@ body {
     });
     div.querySelector('img').onclick = e => {
       e.stopPropagation();
+      if (!window.isAdmin) {//only admin can change URL
+      alert('Only admins can change the image URL.');
+      return;
+    }
       const url = prompt('Enter image URL:', member.img || '');
       if (url !== null) {
         member.img = url.trim();
@@ -741,6 +755,11 @@ body {
   let currentProfileId = null;
 
   function openProfileModal(memberId) {
+  if (!window.isAdmin) {
+    alert('Access denied: Admin only.');
+    return; // Stop here if not admin
+  }
+
   const member = findMember(memberId);
   if (!member) return;
   currentProfileId = memberId;
@@ -749,15 +768,13 @@ body {
   profileImg.alt = `Profile photo of ${member.name}`;
   profileName.textContent = member.name || 'Unnamed';
 
-  const profileBorn = document.getElementById('profileBorn'); // or appropriate id
+  const profileBorn = document.getElementById('profileBorn');
   profileBorn.value = member.born || '';
   profileDesc.value = member.desc || '';
   profileAwards.value = (awardsMap[memberId] || []).join(', ');
 
-  // Show spouses using the dedicated function (handles duplicates)
   showProfileSpouses(memberId);
 
-  // Children section
   profileChildren.innerHTML = '';
   let anyChildren = false;
   const memberCouples = couples.filter(c => c.partner1Id === memberId || c.partner2Id === memberId);
@@ -778,6 +795,8 @@ body {
 
   modal.classList.add('active');
 }
+
+
 function uniqueCouples(couples, enableLogging = false) {
   const uniqueSet = new Set();
   const uniqueList = [];
@@ -844,7 +863,15 @@ function showProfileSpouses(memberId) {
     div.style.color = 'blue';
     div.style.textDecoration = 'underline';
 
-    div.onclick = () => openProfileModal(spouse.id);
+    //div.onclick = () => openProfileModal(spouse.id);
+    div.onclick = () => {
+  console.log('Is Admin?', window.isAdmin);
+  if (!window.isAdmin) {
+    alert('Access denied: Admin only');
+    return;
+  }
+  openProfileModal(spouse.id);
+};
 
     profileSpouses.appendChild(div);
   });
@@ -1014,6 +1041,207 @@ document.getElementById('importFile').addEventListener('change', function (event
   };
   reader.readAsText(file);
 });
+</script>
+
+<script>
+  // Make isAdmin global so other functions can check it
+  window.isAdmin = false;
+
+  const ADMIN_PASSWORD = 'Phoenix32@';
+
+  function setEditingEnabled(enabled) {
+    document.querySelectorAll('button').forEach(btn => {
+      if (btn.id === 'adminBtn') {
+        btn.disabled = false;
+        btn.style.display = '';
+        return;
+      }
+      btn.disabled = !enabled;
+      btn.style.display = enabled ? '' : 'none';
+    });
+
+    document.querySelectorAll('[contenteditable]').forEach(elem => {
+      elem.contentEditable = enabled;
+      if (!enabled) {
+        elem.style.border = 'none';
+        elem.style.backgroundColor = 'transparent';
+      } else {
+        elem.style.border = '1px solid #000';
+        elem.style.backgroundColor = '#fff';
+      }
+    });
+
+    window.isAdmin = enabled; // update global flag
+  }
+
+  document.getElementById('adminBtn').onclick = () => {
+    if (!window.isAdmin) {
+      const password = prompt('Enter admin password:');
+      if (password === ADMIN_PASSWORD) {
+        setEditingEnabled(true);
+        document.getElementById('adminBtn').textContent = 'Logout Admin';
+      } else {
+        alert('Wrong password!');
+      }
+    } else {
+      setEditingEnabled(false);
+      document.getElementById('adminBtn').textContent = 'Admin Login';
+    }
+  };
+
+  /*function openProfileModal(memberId) {
+    if (!window.isAdmin) {
+      alert('Access denied: Admin only.');
+      return;
+    }
+    // your existing code to open the modal with memberId
+    const modal = document.getElementById('profileModal');
+    modal.style.display = 'block';
+
+    // also populate modal content based on memberId here...
+  }
+*/
+
+  function openProfileModal(memberId) {
+    console.log('openProfileModal called, isAdmin=', window.isAdmin); // DEBUG
+
+  if (!window.isAdmin) {
+    alert('Access denied: Admin only.');
+    return; // prevent popup from opening
+  }
+
+  const member = findMember(memberId);
+  if (!member) return;
+
+  currentProfileId = memberId;
+
+  profileImg.src = member.img || 'https://via.placeholder.com/120?text=No+Image';
+  profileImg.alt = `Profile photo of ${member.name}`;
+  profileName.textContent = member.name || 'Unnamed';
+
+  const profileBorn = document.getElementById('profileBorn'); 
+  profileBorn.value = member.born || '';
+  profileDesc.value = member.desc || '';
+  profileAwards.value = (awardsMap[memberId] || []).join(', ');
+
+  showProfileSpouses(memberId);
+
+  profileChildren.innerHTML = '';
+  let anyChildren = false;
+  const memberCouples = couples.filter(c => c.partner1Id === memberId || c.partner2Id === memberId);
+  memberCouples.forEach(couple => {
+    couple.childrenIds.forEach(childId => {
+      const child = findMember(childId);
+      if (child) {
+        anyChildren = true;
+        const div = document.createElement('div');
+        div.textContent = child.name || 'Unnamed';
+        div.style.cursor = 'pointer';
+        div.onclick = () => openProfileModal(child.id);
+        profileChildren.appendChild(div);
+      }
+    });
+  });
+
+  modal.style.display = 'block';
+}
+
+  // Start in readonly mode (non-admin)
+  setEditingEnabled(false);
+</script>
+<script>
+  const ADMIN_PASSWORD = 'Phoenix32@';
+  window.isAdmin = false;
+
+  function setEditingEnabled(enabled) {
+    window.isAdmin = enabled;
+
+    document.querySelectorAll('button').forEach(btn => {
+      if (btn.id === 'adminBtn') return;
+      btn.disabled = !enabled;
+      btn.style.display = enabled ? '' : 'none';
+    });
+
+    document.querySelectorAll('[contenteditable]').forEach(elem => {
+      elem.contentEditable = enabled;
+      elem.style.border = enabled ? '1px solid #000' : 'none';
+      elem.style.backgroundColor = enabled ? '#fff' : 'transparent';
+    });
+  }
+
+  document.getElementById('adminBtn').onclick = () => {
+    if (!window.isAdmin) {
+      const password = prompt('Enter admin password:');
+      if (password === ADMIN_PASSWORD) {
+        setEditingEnabled(true);
+        document.getElementById('adminBtn').textContent = 'Logout Admin';
+      } else {
+        alert('Wrong password!');
+      }
+    } else {
+      setEditingEnabled(false);
+      document.getElementById('adminBtn').textContent = 'Admin Login';
+    }
+  };
+
+  // PROFILE MODAL LOGIC
+  const modal = document.getElementById('profileModal');
+  const profileImg = document.getElementById('profileImg');
+  const profileName = document.getElementById('profileName');
+  const profileDesc = document.getElementById('profileDesc');
+  const profileAwards = document.getElementById('profileAwards');
+  const profileChildren = document.getElementById('profileChildren');
+  const closeBtn = document.getElementById('profileCloseBtn');
+
+  let currentProfileId = null;
+
+ /* function openProfileModal(memberId) {
+    console.log('openProfileModal called. isAdmin:', window.isAdmin);
+
+    if (!window.isAdmin) {
+      alert('Access denied: Admin only.');
+      return;
+    }
+
+    const member = findMember(memberId);
+    if (!member) return;
+    currentProfileId = memberId;
+
+    profileImg.src = member.img || 'https://via.placeholder.com/120?text=No+Image';
+    profileName.textContent = member.name || 'Unnamed';
+
+    document.getElementById('profileBorn').value = member.born || '';
+    profileDesc.value = member.desc || '';
+    profileAwards.value = (awardsMap[memberId] || []).join(', ');
+
+    showProfileSpouses(memberId);
+
+    profileChildren.innerHTML = '';
+    const memberCouples = couples.filter(c => c.partner1Id === memberId || c.partner2Id === memberId);
+    memberCouples.forEach(couple => {
+      couple.childrenIds.forEach(childId => {
+        const child = findMember(childId);
+        if (child) {
+          const div = document.createElement('div');
+          div.textContent = child.name || 'Unnamed';
+          div.style.cursor = 'pointer';
+          div.onclick = () => openProfileModal(child.id);
+          profileChildren.appendChild(div);
+        }
+      });
+    });
+
+    if (profileChildren.innerHTML === '') profileChildren.textContent = 'None';
+    modal.style.display = 'block';
+  }
+
+  closeBtn.onclick = () => modal.style.display = 'none';
+  window.onclick = (e) => {
+    if (e.target === modal) modal.style.display = 'none';
+  };
+
+  // Start in readonly mode
+  setEditingEnabled(false);*/
 </script>
 
 
