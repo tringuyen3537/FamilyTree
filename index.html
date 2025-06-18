@@ -966,36 +966,36 @@ function exportTree() {
 
 
 // IMPORT FAMILY TREE DATA
-function importTree() {
-  const input = document.getElementById('importFile');
-  const file = input.files[0];
-  if (!file) {
-    alert('Please select a JSON file to import.');
-    return;
-  }
+//function importTree() {
+//  const input = document.getElementById('importFile');
+//  const file = input.files[0];
+//  if (!file) {
+//    alert('Please select a JSON file to import.');
+//    return;
+//  }
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const importedData = JSON.parse(e.target.result);
-      if (Array.isArray(importedData)) {
-        familyMembers = importedData;
-        localStorage.setItem('familyTreeData', JSON.stringify(familyMembers));
-        render();
-        alert('Family tree imported successfully!');
-      } else {
-        alert('Invalid file format.');
-      }
-    } catch (err) {
-      alert('Error parsing file: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  }
+//  const reader = new FileReader();
+//  reader.onload = function(e) {
+//    try {
+  //    const importedData = JSON.parse(e.target.result);
+//      if (Array.isArray(importedData)) {
+//        familyMembers = importedData;
+//        localStorage.setItem('familyTreeData', JSON.stringify(familyMembers));
+//        render();
+//        alert('Family tree imported successfully!');
+//      } else {
+//        alert('Invalid file format.');
+//      }
+//    } catch (err) {
+//      alert('Error parsing file: ' + err.message);
+//    }
+//  };
+//  reader.readAsText(file);
+//  }
 
   let familyMembers = JSON.parse(localStorage.getItem('familyTreeData')) || [];
  //  function getRoots() {
-//      return familyMembers.filter(m => !m.parentCoupleId);
+     return familyMembers.filter(m => !m.parentCoupleId);
 //    }
   //new render, diff from the one above
 //  function render() {
