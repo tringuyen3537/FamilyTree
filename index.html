@@ -1029,6 +1029,8 @@ function exportTree() {
 
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+  alert('✅ Family tree exported!');
+}
 
     function importTreeFile(event) {
       const file = event.target.files[0];
