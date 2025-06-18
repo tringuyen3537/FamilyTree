@@ -26,7 +26,7 @@ body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: #fff; /* fallback */
+  background-color: #f3edf1; /* fallback */
   position: relative;
   overflow: hidden;
   border-radius: 8px;
@@ -39,7 +39,7 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   position: relative;
   overflow: hidden;
-  font-weight: bold; /* ✅ Add this to bold name */
+  font-weight: bold; /* ✅ Add this */
 }
 .member img {
   background: rgba(255,255,255,0.6); /* adds contrast to make the image pop */
@@ -435,11 +435,7 @@ body {
 <div id="tree"></div>
 <button onclick="addRootMember()">Add Root Member</button>
 <button onclick="clearTree()">Clear Tree</button>
-<button onclick="exportTree()">Export</button>
-<button onclick="document.getElementById('importFile').click()">Import</button>
-<input type="file" id="importFile" style="display:none" />
 
-  
 <!-- Profile Modal -->
 <div id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
   <div id="profileContent">
@@ -503,7 +499,7 @@ body {
   function findCouple(id) {
     return couples.find(c => c.id === id);
   }
- function getRoots() {
+  function getRoots() {
     return family.filter(m => !m.parentCoupleId && !m.spouseOf);
   }
   function render() {
@@ -512,7 +508,7 @@ body {
     getRoots().forEach(root => {
       tree.appendChild(renderMemberWithCouples(root));
     });
- }
+  }
   function renderMemberWithCouples(member) {
     const container = document.createElement('div');
     const memberCouples = couples.filter(c => c.partner1Id === member.id || c.partner2Id === member.id);
@@ -948,143 +944,6 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   
     window.addEventListener('load', adjustBodyPadding);
     window.addEventListener('resize', adjustBodyPadding);
-/*    // EXPORT FAMILY TREE DATA
-  function exportTree() {
-    const data = JSON.stringify(familyMembers, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'familyTree.json';
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-
-    alert("✅ Export complete! Check your Downloads folder.");
-  }
-
-  window.exportTree = exportTree;  // ✅ This makes sure it’s available globally
-  */
-/* code   // EXPORT FAMILY TREE DATA
-function exportTree() {
-  const data = JSON.stringify(familyMembers, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'familyTree.json';
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}*/
-
- 
-// IMPORT FAMILY TREE DATA
-//function importTree() {
-//  const input = document.getElementById('importFile');
-//  const file = input.files[0];
-//  if (!file) {
-//    alert('Please select a JSON file to import.');
-//    return;
-//  }
-
-//  const reader = new FileReader();
-//  reader.onload = function(e) {
-//    try {
-  //    const importedData = JSON.parse(e.target.result);
-//      if (Array.isArray(importedData)) {
-//        familyMembers = importedData;
-//        localStorage.setItem('familyTreeData', JSON.stringify(familyMembers));
-//        render();
-//        alert('Family tree imported successfully!');
-//      } else {
-//        alert('Invalid file format.');
-//      }
-//    } catch (err) {
-//      alert('Error parsing file: ' + err.message);
-//    }
-//  };
-//  reader.readAsText(file);
-//  }
-
-  let familyMembers = JSON.parse(localStorage.getItem('familyTreeData')) || [];
- //  function getRoots() {
-     return familyMembers.filter(m => !m.parentCoupleId);
-//    }
-  //new render, diff from the one above
-//  function render() {
-   //   const tree = document.getElementById('tree');
-//      tree.innerHTML = '';
-//      getRoots().forEach(member => {
- //       const div = document.createElement('div');
- //       div.className = 'member';
- //       div.textContent = member.name || 'Unnamed';
- //      tree.appendChild(div);
-  //    });
- //   }
-  function exportTree() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyMembers));
-      const dlAnchor = document.createElement('a');
-      dlAnchor.setAttribute("href", dataStr);
-      dlAnchor.setAttribute("download", "familyTreeData.json");
-      dlAnchor.click();
-    }
-
-/*function exportTree() {
-  const data = JSON.stringify(familyMembers, null, 2);
-  const blob = new Blob([data], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'familyTree.json';
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-
-  // ✅ Add a temporary notification
-  const message = document.createElement('div');
-  message.textContent = '✅ Family tree exported!';
-  message.style.position = 'fixed';
-  message.style.top = '20px';
-  message.style.right = '20px';
-  message.style.background = '#4caf50';
-  message.style.color = '#fff';
-  message.style.padding = '8px 12px';
-  message.style.borderRadius = '5px';
-  message.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
-  document.body.appendChild(message);
-
-  setTimeout(() => document.body.removeChild(message), 3000); // remove after 3 sec
-}*/
-
-    function importTreeFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          familyMembers = JSON.parse(e.target.result);
-          localStorage.setItem('familyTreeData', JSON.stringify(familyMembers));
-          render();
-        } catch (err) {
-          alert("Invalid file");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    document.getElementById('importFile').addEventListener('change', importTreeFile);
-
-    render();
-</script>
+  </script>
 </body>
 </html>
