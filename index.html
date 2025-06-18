@@ -1016,7 +1016,25 @@ function exportTree() {
       dlAnchor.click();
     }*/
   // EXPORT FAMILY TREE DATA
-function exportTree() {
+  function exportTree() {
+    const data = JSON.stringify(familyMembers, null, 2);
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'familyTree.json';
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    alert("✅ Export complete! Check your Downloads folder.");
+  }
+
+  window.exportTree = exportTree;  // ✅ This makes sure it’s available globally
+/*function exportTree() {
   const data = JSON.stringify(familyMembers, null, 2);
   const blob = new Blob([data], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
@@ -1044,7 +1062,7 @@ function exportTree() {
   document.body.appendChild(message);
 
   setTimeout(() => document.body.removeChild(message), 3000); // remove after 3 sec
-}
+}*/
 
     function importTreeFile(event) {
       const file = event.target.files[0];
