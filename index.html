@@ -435,10 +435,10 @@ body {
 <div id="tree"></div>
 <button onclick="addRootMember()">Add Root Member</button>
 <button onclick="clearTree()">Clear Tree</button>
-<button onclick="exportTree()">Export Tree</button>
+<button onclick="exportTree()">Export</button>
+<button onclick="document.getElementById('importFile').click()">Import</button>
+<input type="file" id="importFile" style="display:none" />
 
-<input type="file" id="importFile" accept=".json" style="margin-top:10px;" />
-<button onclick="importTree()">Import Tree</button>
   
 <!-- Profile Modal -->
 <div id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
@@ -503,16 +503,16 @@ body {
   function findCouple(id) {
     return couples.find(c => c.id === id);
   }
-  function getRoots() {
-    return family.filter(m => !m.parentCoupleId && !m.spouseOf);
-  }
-  function render() {
-    const tree = document.getElementById('tree');
-    tree.innerHTML = '';
-    getRoots().forEach(root => {
-      tree.appendChild(renderMemberWithCouples(root));
-    });
-  }
+ // function getRoots() {
+//    return family.filter(m => !m.parentCoupleId && !m.spouseOf);
+//  }
+//  function render() {
+ //   const tree = document.getElementById('tree');
+//    tree.innerHTML = '';
+//    getRoots().forEach(root => {
+//      tree.appendChild(renderMemberWithCouples(root));
+//    });
+//  }
   function renderMemberWithCouples(member) {
     const container = document.createElement('div');
     const memberCouples = couples.filter(c => c.partner1Id === member.id || c.partner2Id === member.id);
@@ -994,21 +994,47 @@ function importTree() {
   }
 
   let familyMembers = JSON.parse(localStorage.getItem('familyTreeData')) || [];
-
+   function getRoots() {
+      return familyMembers.filter(m => !m.parentCoupleId);
+    }
+  //new render, diff from the one above
+  function render() {
+      const tree = document.getElementById('tree');
+      tree.innerHTML = '';
+      getRoots().forEach(member => {
+        const div = document.createElement('div');
+        div.className = 'member';
+        div.textContent = member.name || 'Unnamed';
+        tree.appendChild(div);
+      });
+    }
   function exportTree() {
-    const data = JSON.stringify(familyMembers, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyMembers));
+      const dlAnchor = document.createElement('a');
+      dlAnchor.setAttribute("href", dataStr);
+      dlAnchor.setAttribute("download", "familyTreeData.json");
+      dlAnchor.click();
+    }
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'familyTree.json';
-    document.body.appendChild(link);
-    link.click();
+    function importTreeFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          familyMembers = JSON.parse(e.target.result);
+          localStorage.setItem('familyTreeData', JSON.stringify(familyMembers));
+          render();
+        } catch (err) {
+          alert("Invalid file");
+        }
+      };
+      reader.readAsText(file);
+    }
 
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }
+    document.getElementById('importFile').addEventListener('change', importTreeFile);
+
+    render();
 </script>
 </body>
 </html>
