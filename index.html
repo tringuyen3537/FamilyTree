@@ -435,6 +435,39 @@ body {
 <div id="tree"></div>
 <button onclick="addRootMember()">Add Root Member</button>
 <button onclick="clearTree()">Clear Tree</button>
+<button id="testExportBtn">Test Export</button>
+<script>
+  // ✅ Dummy family data for testing — replace this with YOUR actual data variable if you know it
+  window.family = [
+    { id: 1, name: "John Doe", born: "1950" },
+    { id: 2, name: "Jane Doe", born: "1955" }
+  ];
+
+  // ✅ Wait for the document to fully load before attaching events
+  window.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('testExportBtn');
+    btn.addEventListener('click', () => {
+      console.log(window.family); // ✅ Should now print in Console
+      alert('Check console for family data');
+    });
+  });
+</script>
+<button onclick="exportFamilyData()">Export JSON</button>
+
+<script>
+function exportFamilyData() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.familyData, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", "familyTreeData.json");
+  downloadAnchor.click();
+}
+</script>
+<button id="testFamilyBtn" style="position: fixed; bottom: 20px; right: 20px; z-index: 10000; padding: 10px 15px; background: #0077cc; color: white; border: none; border-radius: 5px; cursor: pointer;">
+  Test Family Data
+</button>
+
+
 
 <!-- Profile Modal -->
 <div id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
@@ -443,10 +476,9 @@ body {
     <img id="profileImg" src="" alt="Profile Photo" />
     <h2 id="profileName"></h2>
     <div>
-        <label for="profileBorn">Born:</label>
-        <input type="text" id="profileBorn" placeholder="Enter birth year or date" />
-      </div>
-    
+      <label for="profileBorn">Born:</label>
+      <input type="text" id="profileBorn" placeholder="Enter birth year or date" />
+    </div>
     <div>
       <span class="label">About:</span>
       <textarea id="profileDesc" rows="3"></textarea>
@@ -457,9 +489,7 @@ body {
     </div>
     <div>
       <span class="label">Spouse(s):</span>
-      <!-- Profile Modal <div id="profileSpouses" class="profile-list"></div>-->
       <div id="profileSpouses" style="display: flex; gap: 10px; flex-wrap: wrap;"></div>
-
     </div>
     <div>
       <span class="label">Children:</span>
@@ -467,7 +497,6 @@ body {
     </div>
   </div>
 </div>
-
 <script>
 (() => {
   const STORAGE_KEY = 'familyTreeConnectors';
@@ -751,6 +780,7 @@ body {
   profileImg.alt = `Profile photo of ${member.name}`;
   profileName.textContent = member.name || 'Unnamed';
 
+  const profileBorn = document.getElementById('profileBorn'); // or appropriate id
   profileBorn.value = member.born || '';
   profileDesc.value = member.desc || '';
   profileAwards.value = (awardsMap[memberId] || []).join(', ');
@@ -865,9 +895,7 @@ function closeProfileModal() {
     // existing saves like desc, awards...
     member.desc = profileDesc.value.trim();
     awardsMap[currentProfileId] = profileAwards.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
-    
-         member.desc = profileDesc.value.trim();
-         awardsMap[currentProfileId] = profileAwards.value.split(',').map(s => s.trim()).filter(s => s.length > 0);
+         
       save();
       render();
     }
@@ -944,6 +972,62 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   
     window.addEventListener('load', adjustBodyPadding);
     window.addEventListener('resize', adjustBodyPadding);
+
+    //testing date
+    document.getElementById('testFamilyBtn').addEventListener('click', () => {
+  if (typeof family !== 'undefined') {
+    console.log('Current family data:', family);
+    alert('Check the console (F12) for family data output.');
+  } else {
+    console.warn('No variable named "family" found.');
+    alert('No variable named "family" found. Please check your code.');
+  }
+});
   </script>
+  <!-- Button to trigger export -->
+<button id="exportFamilyBtn" style="">Export Family JSON</button>
+
+<script>
+(() => {
+  const STORAGE_KEY = 'familyTreeConnectors';
+  let family = [];
+  let couples = [];
+  let awardsMap = {};
+
+  // Load from localStorage
+  function load() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      const parsed = JSON.parse(data);
+      family = parsed.family || [];
+      couples = parsed.couples || [];
+      awardsMap = parsed.awardsMap || {};
+    }
+  }
+
+  // Assign to window object for visibility
+  function refreshFamilyData() {
+    window.familyData = { family, couples, awardsMap };
+  }
+
+  // Export function to download as JSON
+  function exportFamilyData() {
+    refreshFamilyData(); // Make sure it's fresh
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.familyData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "familyTreeData.json");
+    downloadAnchor.click();
+  }
+
+  // Load on start
+  load();
+  refreshFamilyData();
+
+  // Hook up button
+  document.getElementById('exportFamilyBtn').addEventListener('click', exportFamilyData);
+})();
+</script>
+
 </body>
 </html>
