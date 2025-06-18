@@ -344,7 +344,7 @@ a:hover::after, .spouse-profile span:hover::after {
 
 body::before {
   content: "";
-  position: absolute; /* change from fixed */
+  position: relative; /* change from fixed */
   top: 0;
   left: 0;
   width: 100%;
@@ -352,6 +352,7 @@ body::before {
   min-height: 100vh;
   background: url('background.jpg') no-repeat center center;
   background-size: cover;
+  background-attachment: fixed;  
   z-index: -1;
   pointer-events: none;
  
