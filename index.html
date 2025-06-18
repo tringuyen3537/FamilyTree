@@ -436,8 +436,9 @@ body {
 <button onclick="addRootMember()">Add Root Member</button>
 <button onclick="clearTree()">Clear Tree</button>
 <button onclick="exportTree()">Export Tree</button>
-<input type="file" id="importFile" onchange="importTree(event)" />
-
+<input type="file" id="importFile" accept=".json" />
+<button onclick="importTree()">Import Tree</button>
+  
 <!-- Profile Modal -->
 <div id="profileModal" role="dialog" aria-modal="true" aria-labelledby="profileTitle">
   <div id="profileContent">
@@ -964,25 +965,32 @@ function exportTree() {
 
 
 // IMPORT FAMILY TREE DATA
-function importTree(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+function importTree() {
+  const input = document.getElementById('importFile');
+  const file = input.files[0];
+  if (!file) {
+    alert('Please select a JSON file first.');
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
-      const imported = JSON.parse(e.target.result);
-      if (!Array.isArray(imported)) throw new Error("Invalid format");
-      familyMembers = imported;
-      save();
-      render();
-      alert("Family tree imported successfully!");
+      const importedData = JSON.parse(e.target.result);
+      if (Array.isArray(importedData)) {
+        familyMembers = importedData;
+        localStorage.setItem('familyTreeData', JSON.stringify(familyMembers));
+        render();
+        alert('Family tree imported successfully!');
+      } else {
+        alert('Invalid file format.');
+      }
     } catch (err) {
-      alert("Invalid file. Please select a valid familyTree.json file.");
+      alert('Error reading file: ' + err.message);
     }
   };
   reader.readAsText(file);
 }
-
   </script>
   <script>
   let familyMembers = JSON.parse(localStorage.getItem('familyTreeData')) || [];
