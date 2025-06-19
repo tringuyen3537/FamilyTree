@@ -440,6 +440,51 @@ body {
   background-position: center;
   color: #333;
 }
+  /* ============================= */
+/* === RESPONSIVE FOR MOBILE === */
+/* ============================= */
+
+@media (max-width: 768px) {
+  body {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+
+  #mainHeader h1 {
+    font-size: 2.2rem;
+  }
+
+  .member {
+    width: 120px;
+    font-size: 0.9rem;
+  }
+
+  img {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    transform: scale(0.8);
+  }
+
+  #mainHeader h1 {
+    font-size: 1.8rem;
+  }
+
+  .member {
+    width: 100px;
+    font-size: 0.8rem;
+  }
+
+  img {
+    width: 60px;
+    height: 60px;
+  }
+}
+
 </style>
 </head>
 <body>
