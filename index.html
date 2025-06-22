@@ -516,7 +516,7 @@ body {
     <img id="profileImg" src="" alt="Profile Photo" />
     <h2 id="profileName"></h2>
     <div>
-      <label for="profileBorn">Lifespan:</label>
+      <label for="profileBorn">(Birth–Death):</label>
       <input type="text" id="profileBorn" placeholder="Enter birth year or date" />
     </div>
     <div>
@@ -612,7 +612,7 @@ body {
     div.innerHTML = `
       <img src="${member.img || 'https://via.placeholder.com/80?text=No+Image'}" alt="Profile image of ${member.name}" />
       <strong contenteditable="true">${member.name || 'Unnamed'}</strong>
-     <div class="born-year">${member.born ? `Lifespan: ${member.born}` : ''}</div>
+     <div class="born-year">${member.born ? `(Birth–Death): ${member.born}` : ''}</div>
       <small contenteditable="true">${member.desc || ''}</small>
       <div>
         <button title="Add child">Child</button>
