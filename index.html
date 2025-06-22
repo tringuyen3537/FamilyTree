@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Family Tree of Nguyễn Hữu's Family</title>
+<title>Family Tree of Nguyễn's Family</title>
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
 <style>
 body {
@@ -21,6 +21,7 @@ body {
   gap: 20px;
   margin-bottom: 6px;
 }
+
 .member {
   background-image: url('background-profile.jpg');
   background-size: 140px 100%; /* match member width and full height */
@@ -162,20 +163,20 @@ a:hover::after, .spouse-profile span:hover::after {
   padding-left: 100px;
   border-left: 4px dashed  #1229ac;
 }
-  .children .children {
+.children .children {
   border-left: 3px dashed #0a0; /* Generation 2 → Green */
 }
 .children .children .children {
   border-left: 3px dashed rgb(247, 34, 6); /* Generation 3 → Blue */
 }
 .children .children .children .children {
-  border-left: 3px dashed #f804ec; /* Generation 4 → e */
+  border-left: 3px dashed #f804ec; /* Generation 4 → Orange */
 }
 .children .children .children .children .children {
-  border-left: 3px dashed #07e2ff; /* Generation 5 →   */
+  border-left: 3px dashed #07e2ff; /* Generation 5 → Purple */
 }
 .children .children .children .children .children .children {
-  border-left: 3px dashed #d40cee; /* Generation 5 →   */
+  border-left: 3px dashed #d40cee; /* Generation 5 → Purple */
 }
 .children::before {
   content: '';
@@ -345,14 +346,17 @@ a:hover::after, .spouse-profile span:hover::after {
 body::before {
   content: "";
   position: relative; /* change from fixed */
+  min-height: 300vh; /* enough scroll */
+  /*background-repeat: repeat;*/
   top: 0;
   left: 0;
   width: 100%;
   height: 100%; /* cover full document height */
   min-height: 100vh;
-  background: url('background.jpg') no-repeat center center;
-  background-size: cover;
   background-attachment: fixed;  
+  background: url('background.jpg');
+  background-repeat: repeat-y;
+  background-size: cover;
   z-index: -1;
   pointer-events: none;
  
@@ -440,7 +444,7 @@ body {
   background-position: center;
   color: #333;
 }
-  /* ============================= */
+/* ============================= */
 /* === RESPONSIVE FOR MOBILE === */
 /* ============================= */
 
@@ -495,7 +499,7 @@ body {
           <span id="date"></span>
           <span id="weather">🌤️ 25°C Melbourne</span>
         </div>
-        <h1>Family Tree of Nguyễn Hữu's Family</h1>
+        <h1>Family Tree of Nguyễn's Family</h1>
         <div class="right-info"></div> <!-- empty for now -->
       </header>
 
@@ -516,7 +520,7 @@ body {
     <img id="profileImg" src="" alt="Profile Photo" />
     <h2 id="profileName"></h2>
     <div>
-      <label for="profileBorn">(Birth–Death):</label>
+      <label for="profileBorn">Born:</label>
       <input type="text" id="profileBorn" placeholder="Enter birth year or date" />
     </div>
     <div>
@@ -612,7 +616,7 @@ body {
     div.innerHTML = `
       <img src="${member.img || 'https://via.placeholder.com/80?text=No+Image'}" alt="Profile image of ${member.name}" />
       <strong contenteditable="true">${member.name || 'Unnamed'}</strong>
-     <div class="born-year">${member.born ? `(Birth–Death): ${member.born}` : ''}</div>
+     <div class="born-year">${member.born ? `Born: ${member.born}` : ''}</div>
       <small contenteditable="true">${member.desc || ''}</small>
       <div>
         <button title="Add child">Child</button>
@@ -1032,9 +1036,11 @@ setInterval(updateTimeAndDate, 60000); // update every minute
 
    
   </script>
-  <!-- Button to trigger export -->
+  <!-- Button to trigger export-->
 <button id="exportFamilyBtn" style="">Export Family JSON</button>
 
+
+<!--
 <script>
 (() => {
   const STORAGE_KEY = 'familyTreeConnectors';
@@ -1075,12 +1081,12 @@ setInterval(updateTimeAndDate, 60000); // update every minute
   // Hook up button
   document.getElementById('exportFamilyBtn').addEventListener('click', exportFamilyData);
 })();
-</script>
+</script> -->
 
 <!-- Add Import Button -->
 <input type="file" id="importFile" accept=".json" />
 <button onclick="document.getElementById('importFile').click()">Import Family Tree JSON</button>
-
+<!--
 <script>
 document.getElementById('importFile').addEventListener('change', function (event) {
   const file = event.target.files[0];
@@ -1102,7 +1108,7 @@ document.getElementById('importFile').addEventListener('change', function (event
   };
   reader.readAsText(file);
 });
-</script>
+</script>-->
 
 <script>
   // Make isAdmin global so other functions can check it
@@ -1304,6 +1310,67 @@ document.getElementById('importFile').addEventListener('change', function (event
   // Start in readonly mode
   setEditingEnabled(false);*/
 </script>
+
+<script>
+  (() => {
+    const STORAGE_KEY = 'familyTreeConnectors';
+  
+    function loadFromStorage() {
+      const data = localStorage.getItem(STORAGE_KEY);
+      if (data) {
+        try {
+          return JSON.parse(data);
+        } catch (e) {
+          console.error('Error parsing localStorage:', e);
+          return null;
+        }
+      }
+      return null;
+    }
+  
+    function exportFamilyData() {
+      const data = loadFromStorage();
+      if (!data) {
+        alert("No family tree data to export.");
+        return;
+      }
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+      const anchor = document.createElement('a');
+      anchor.setAttribute("href", dataStr);
+      anchor.setAttribute("download", "familyTreeData.json");
+      anchor.click();
+    }
+  
+    function importFamilyData(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const importedData = JSON.parse(e.target.result);
+          if (!importedData.family || !importedData.couples || !importedData.awardsMap) {
+            throw new Error("Invalid JSON structure.");
+          }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
+          alert("Import successful! Reloading...");
+          location.reload(); // reload to trigger render()
+        } catch (err) {
+          alert("Import failed: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+  
+    document.getElementById('exportFamilyBtn').onclick = exportFamilyData;
+    document.getElementById('importFile').addEventListener('change', function (e) {
+      if (e.target.files[0]) importFamilyData(e.target.files[0]);
+    });
+     // Load on start
+  load();
+  refreshFamilyData();
+
+  // Hook up button
+  document.getElementById('exportFamilyBtn').addEventListener('click', exportFamilyData);
+  })();
+  </script>
 
 
 </body>
