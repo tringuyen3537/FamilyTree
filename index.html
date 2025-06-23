@@ -533,7 +533,13 @@ body {
   <div id="profileContent">
     <button id="profileCloseBtn" aria-label="Close Profile">&times;</button>
     <img id="profileImg" src="" alt="Profile Photo" />
-    <h2 id="profileName"></h2>
+    <h2>
+    <div>
+      <label for="profileNameInput">Name:</label>
+      <input type="text" id="profileNameInput" placeholder="Enter name" />
+    </div>
+  </h2>
+    
     <div>
       <label for="profileBorn">(Lifespan):</label>
       <input type="text" id="profileBorn" placeholder="Enter birth year or date" />
@@ -833,8 +839,8 @@ body {
   const closeBtn = document.getElementById('profileCloseBtn');
 
   let currentProfileId = null;
-
-  function openProfileModal(memberId) {
+/*working 23062025*/
+  /*function openProfileModal(memberId) {
   if (!window.isAdmin) {
     alert('Access denied: Admin only.');
     return; // Stop here if not admin
@@ -874,7 +880,52 @@ body {
   if (!anyChildren) profileChildren.textContent = 'None';
 
   modal.classList.add('active');
+}*/
+function openProfileModal(memberId) {
+  if (!window.isAdmin) {
+    alert('Access denied: Admin only.');
+    return; // Stop here if not admin
+  }
+
+  const member = findMember(memberId);
+  if (!member) return;
+  currentProfileId = memberId;
+
+  profileImg.src = member.img || 'https://via.placeholder.com/120?text=No+Image';
+  profileImg.alt = `Profile photo of ${member.name}`;
+
+  const profileNameInput = document.getElementById('profileNameInput');
+  profileNameInput.value = member.name || '';
+
+  const profileBorn = document.getElementById('profileBorn');
+  profileBorn.value = member.born || '';
+  profileDesc.value = member.desc || '';
+  profileAwards.value = (awardsMap[memberId] || []).join(', ');
+
+  showProfileSpouses(memberId);
+
+  profileChildren.innerHTML = '';
+  let anyChildren = false;
+  const memberCouples = couples.filter(c => c.partner1Id === memberId || c.partner2Id === memberId);
+  memberCouples.forEach(couple => {
+    couple.childrenIds.forEach(childId => {
+      const child = findMember(childId);
+      if (child) {
+        anyChildren = true;
+        const div = document.createElement('div');
+        div.textContent = child.name || 'Unnamed';
+        div.style.cursor = 'pointer';
+        div.onclick = () => openProfileModal(child.id);
+        profileChildren.appendChild(div);
+      }
+    });
+  });
+  if (!anyChildren) profileChildren.textContent = 'None';
+
+  modal.classList.add('active');
 }
+
+
 
 
 function uniqueCouples(couples, enableLogging = false) {
@@ -961,6 +1012,7 @@ function showProfileSpouses(memberId) {
 //console.log('Couples filtered for member:', memberCouples);
 //console.log('Adding spouse:', spouseId);
 
+/* working 23/6/25
 function closeProfileModal() {
     if (currentProfileId) {
       // Save changes from modal back to member data
@@ -977,7 +1029,30 @@ function closeProfileModal() {
     }
     modal.classList.remove('active');
     currentProfileId = null;
+  }*/
+  function closeProfileModal() {
+  if (currentProfileId) {
+    const member = findMember(currentProfileId);
+    if (!member) return;
+
+    // Get the new name from the input field
+    const profileNameInput = document.getElementById('profileNameInput');
+    member.name = profileNameInput.value.trim() || 'Unnamed';
+
+    member.born = profileBorn.value.trim();
+    member.desc = profileDesc.value.trim();
+    awardsMap[currentProfileId] = profileAwards.value
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0);
+
+    save();
+    render();
   }
+
+  modal.classList.remove('active');
+  currentProfileId = null;
+}
 
   closeBtn.onclick = closeProfileModal;
   modal.onclick = e => {
